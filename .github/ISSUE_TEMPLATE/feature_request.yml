@@ -1,0 +1,67 @@
+name: 功能建议
+description: 提交新能力、模板增强、文档完善或工作流优化建议
+title: "[Feature] "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        欢迎提出建议。请尽量描述清楚使用场景、现状问题和期望结果。
+
+  - type: input
+    id: summary
+    attributes:
+      label: 建议摘要
+      description: 用一句话描述你的建议
+      placeholder: 例如：支持模块级附属版本号记录
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: 建议类别
+      options:
+        - Skill 工作流
+        - 模板结构
+        - SQL / 配置脚本规范
+        - README / 文档
+        - GitHub 协作配置
+        - 其它
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: 当前问题
+      description: 说明当前做法有什么痛点或缺口
+      placeholder: 例如：多模块仓库中缺少模块级附属版本记录模板
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 建议方案
+      description: 尽量写明你期望的交付形式
+      placeholder: |
+        例如：
+        - 在 version.json 中增加 modules 字段
+        - 在 README 中补充对应示例
+    validations:
+      required: true
+
+  - type: textarea
+    id: benefits
+    attributes:
+      label: 预期收益
+      description: 说明该建议能解决什么问题
+      placeholder: 例如：便于统一总版本号的同时保留模块级附属记录
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: 补充信息
+      description: 可附带示例目录、草图、参考仓库或现有实现

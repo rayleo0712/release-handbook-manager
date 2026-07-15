@@ -1,0 +1,78 @@
+name: Bug 报告
+description: 提交功能缺陷、文档错误、模板问题或行为异常
+title: "[Bug] "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢反馈问题。请尽量填写完整信息，便于复现和定位。
+
+  - type: input
+    id: summary
+    attributes:
+      label: 问题摘要
+      description: 用一句话描述问题
+      placeholder: 例如：初始化后未生成 04-发布检查清单.md
+    validations:
+      required: true
+
+  - type: dropdown
+    id: scope
+    attributes:
+      label: 影响范围
+      options:
+        - SKILL.md
+        - README / 文档
+        - templates 模板
+        - examples 示例
+        - GitHub 配置
+        - 其它
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤
+      description: 请按顺序写明操作过程
+      placeholder: |
+        1. 触发 rhm 初始化
+        2. 检查 release 目录
+        3. 发现缺少某文件
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: 预期结果
+      placeholder: 应生成完整的版本目录与模板文件
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: 实际结果
+      placeholder: 实际只生成了部分文件，或文档内容与预期不一致
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: 环境信息
+      description: 可填写 AI 平台、操作系统、仓库结构、数据库类型等
+      placeholder: |
+        - 平台：
+        - 操作系统：
+        - 项目结构：
+        - 版本号：
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: 补充信息
+      description: 可粘贴日志、截图、目录树或相关上下文
