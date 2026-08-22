@@ -186,6 +186,7 @@ release/
       03-config-002-角色权限配置.sql
       04-发布检查清单.md
       05-发布后验证记录.md
+      05-1-功能验收用例(非技术版).md
       06-版本更新日志.md
 ```
 
@@ -194,6 +195,11 @@ Notes:
 - `02` and `03` are not nested into extra folders
 - all files stay in one flat level
 - file prefixes directly encode category and execution order
+- `05` (tech-facing verification, for QA/developers) and `05-1` (non-tech UAT acceptance, for PM/business users) go hand in hand as a dual-track pair; 05-1 uses an 8-column structure · full-level output, with **Output Mode Switch (A Internal / B External Delivery)**
+
+### §3.2 Directory Conventions
+
+- It is **strictly prohibited** to store temporary command markdown files such as `YYYYMMDD-Windows-Terminal` under the `versions/` directory. Such temporary command records must be consolidated into §4.1.3 of `01-更新手册.md`.
 
 ## Default release model
 
@@ -266,6 +272,20 @@ Use rhm to maintain the current version changes. This task includes one schema c
 Use rhm to check whether v1.1.0 is ready for release
 ```
 
+## §4 File Descriptions
+
+### §4.2 Files Inside Version Directory
+
+| File No. | File Name Template | Description |
+|---------|-------------------|-------------|
+| 01 | `01-更新手册.md` | Source-of-truth release handbook: change summary, SQL/manual step references, release order, rollback notes, §4.1.3 temp-command consolidation area |
+| 02 | `02-db-*.sql` | Scriptable database operations: schema changes, historical data repair, backfill, migration |
+| 03 | `03-config-*.sql` | Database-driven configuration scripts: menu setup, permission grants, role grants, dictionaries, params |
+| 04 | `04-发布检查清单.md` | Pre-release checklist: environment consistency, script completeness, permission verification |
+| 05 | `05-发布后验证记录.md` | Tech-facing post-release verification (for QA/dev): APIs, database, logs, performance |
+| **05-1** | **`05-1-功能验收用例(非技术版).md`** | **Non-tech version · for Product Manager / UAT / Business-user acceptance checklist: 8-column structure · full-level output · with Output Mode Switch (A Internal Review / B External Delivery); 8 columns: Module, Scenario, Precondition, Steps, Expected, Priority P0/P1/P2, Actual, Approver** |
+| 06 | `06-版本更新日志.md` | External release notes, grouped by Features / Fixes / Improvements |
+
 ## Repository layout
 
 ```text
@@ -290,6 +310,7 @@ release-handbook-manager/
             01-更新手册.md
             04-发布检查清单.md
             05-发布后验证记录.md
+            05-1-功能验收用例(非技术版).md
             06-版本更新日志.md
   skills/
     release-handbook-manager/
@@ -303,6 +324,7 @@ release-handbook-manager/
             01-更新手册.md
             04-发布检查清单.md
             05-发布后验证记录.md
+            05-1-功能验收用例(非技术版).md
             06-版本更新日志.md
 ```
 

@@ -334,6 +334,7 @@ release/
       03-config-002-角色权限配置.sql
       04-发布检查清单.md
       05-发布后验证记录.md
+      05-1-功能验收用例(非技术版).md
       06-版本更新日志.md
 ```
 
@@ -345,6 +346,13 @@ release/
   All files stay in one flat level.
 - 文件名前缀直接体现类型和执行顺序  
   File prefixes directly encode category and execution order.
+- `05`（技术版验证）与 `05-1`（非技术版 UAT 验收）为双轨配套：05 面向测试/开发人员，05-1 面向产品经理/业务用户；05-1 采用 8 列结构·完整级输出，提供 Output Mode Switch（A 内部版/B 对外交付版）双模式切换  
+  `05` (tech-facing verification) and `05-1` (non-tech UAT acceptance) go hand in hand: 05 for QA/dev, 05-1 for PM/business users. 05-1 uses an 8-column structure · full-level output, with Output Mode Switch (A Internal / B External Delivery).
+
+### §3.2 目录约定 / Directory Conventions
+
+- `versions/` 目录下严禁存放 `YYYYMMDD-Windows-Terminal` 类临时命令 md 文件，此类临时命令记录必须合并写入 `01-更新手册.md` 的 §4.1.3 章节  
+  It is strictly prohibited to store temporary command markdown files such as `YYYYMMDD-Windows-Terminal` under the `versions/` directory. Such temporary command records must be consolidated into §4.1.3 of `01-更新手册.md`.
 
 ## 适用场景 / Typical Use Cases
 
@@ -417,6 +425,20 @@ Use rhm to check whether v1.0.0 is ready for release
 Use rhm to maintain the current version changes. This task includes one schema change, two permission SQL scripts, and one production-only manual config step.
 ```
 
+## §4 各文件说明 / File Descriptions
+
+### §4.2 版本目录内文件说明 / Files Inside Version Directory
+
+| 文件编号 | 文件名模板 | 说明 / Description |
+|---------|-----------|-------------------|
+| 01 | `01-更新手册.md` | 版本发布真源手册：变更摘要、SQL/人工步骤引用、发布顺序、回滚说明、§4.1.3 临时命令合并区 |
+| 02 | `02-db-*.sql` | 数据库结构变更、历史数据修复等可脚本化数据库操作 |
+| 03 | `03-config-*.sql` | 菜单权限、角色权限、字典参数等数据库驱动配置脚本 |
+| 04 | `04-发布检查清单.md` | 发布前逐项核对清单，含环境一致性、脚本检查、权限检查 |
+| 05 | `05-发布后验证记录.md` | 面向测试/开发人员的技术版验证记录（接口、数据库、日志、性能） |
+| **05-1** | **`05-1-功能验收用例(非技术版).md`** | **非技术版·面向产品经理/UAT/业务用户验收用例清单：8列结构·完整级输出·支持 Output Mode Switch（A 内部评审版 / B 对外交付版）双模式切换；含模块、场景、前置条件、操作步骤、预期结果、优先级P0/P1/P2、实际结果、验收人8列** |
+| 06 | `06-版本更新日志.md` | 对外发布版本更新说明，按功能/修复/优化分类 |
+
 ## 仓库目录说明 / Repository Layout
 
 ```text
@@ -441,6 +463,7 @@ release-handbook-manager/
             01-更新手册.md
             04-发布检查清单.md
             05-发布后验证记录.md
+            05-1-功能验收用例(非技术版).md
             06-版本更新日志.md
   skills/
     release-handbook-manager/
@@ -454,6 +477,7 @@ release-handbook-manager/
             01-更新手册.md
             04-发布检查清单.md
             05-发布后验证记录.md
+            05-1-功能验收用例(非技术版).md
             06-版本更新日志.md
 ```
 
