@@ -3,6 +3,16 @@
   "previousVersion": "",
   "releaseDate": "",
   "status": "developing",
-  "owner": "示例负责人",
-  "description": "示例项目的版本发布治理初始化"
+  "owner": "",
+  "description": "【SKILL一票否决红线】：若以下任意一条为真，则本版本禁止发布，不得进入发布执行阶段：① releaseGate.checklist04AllPassed !== true（04发布检查清单未全通过）；② releaseGate.uat051Conclusion !== 'passed'（05-1 UAT验收结论非全部通过）；③ releaseGate.phase3SignOff.dev !== true 或 test !== true 或 ops !== true（PHASE3三方签字未完成）；④ releaseGate.materialsSha256 为空字符串或与发布包SHA256校验不匹配（材料完整性校验失败）；⑤ 存在 YYYYMMDD-Windows-Terminal 临时命令文件（发布材料包含未清理临时文件）。",
+  "releaseGate": {
+    "checklist04AllPassed": false,
+    "uat051Conclusion": "pending",
+    "phase3SignOff": {
+      "dev": false,
+      "test": false,
+      "ops": false
+    },
+    "materialsSha256": ""
+  }
 }
