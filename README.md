@@ -57,9 +57,15 @@ Chat alias:
 - **用途 / Purpose**：标准化发布准备、发布执行与发布留痕  
   Standardize release preparation, release execution, and release records.
 - **版本真源 / Version source**：`release/version.json`
+- **版本号维护 / Version maintenance**：**一票否决红线——必须人工明确指令维护，禁止 AI 自动生成 / 自动 bump / 自动升级**  
+  **Veto redline — version number must be maintained by explicit human instruction; AI auto-generation / auto-bump / auto-upgrade is strictly prohibited.**
 - **版本格式 / Version format**：`v主版本.次版本.修订号` / `vMajor.Minor.Patch`
 - **默认模型 / Default model**：全项目单一总版本号  
   One top-level version per project, even in multi-module repositories.
+- **脚本校验能力 / SQL validation**：SQL 脚本强制头部说明区 + 尾部校验 SQL + 多片段分片段校验（明细 + 汇总 + 失败项）  
+  Mandatory SQL header area + tail validation SQL + multi-segment per-segment validation (details + summary + failures).
+- **配套自动化测试 Skill / Companion test Skill**：新增 `release-test-auto`（简称 `rta`），负责从 05-1 真源自动生成测试脚本并执行 IDE 终端可恢复自动化测试  
+  New `release-test-auto` (alias `rta`) Skill: auto-generates test scripts from 05-1 source and runs resumable IDE-terminal automation.
 - **文档现状 / Documentation status**：当前为中文主站 + 英文补充入口  
   The repository currently uses Chinese as the primary documentation language, with English support for the public entry page.
 
@@ -240,6 +246,16 @@ It checks whether:
 - `release/version.json` is the only source of truth for the current version
 - the version format is fixed to `vMajor.Minor.Patch`
 
+### 版本号必须人工维护（一票否决红线） / Version numbers must be maintained manually (Veto Redline)
+
+- `version` 字段必须由人工明确指令触发维护，AI 不得在任何场景下自动生成 / 自动 bump / 自动升级版本号
+- AI 仅允许在两种合法场景下操作 `version` 字段：(1) 人工明确给出具体目标版本号并要求写入；(2) 人工明确指令版本号变更意图
+- 初始化时如无人工指出版本号，必须写入占位值（如 `vX.Y.Z`）并明确提示人工维护，禁止擅自填入猜测值
+
+- The `version` field **must** be maintained by an explicit human instruction. AI must never auto-generate, auto-bump, or auto-upgrade the version number under any scenario.
+- AI is only permitted to write the `version` field in exactly two cases: (1) human explicitly provides the exact target version and asks to write it; (2) human explicitly instructs a version-change intent.
+- During initialization, if no human-provided version is available, a placeholder (e.g. `vX.Y.Z`) must be used with a clear prompt for manual completion. Guessed values are strictly prohibited.
+
 ### 能脚本化的必须脚本化 / Everything scriptable must be scripted
 
 以下内容必须产出 SQL，而不是只写文字说明：
@@ -257,6 +273,20 @@ The following items must be delivered as SQL, not vague notes:
 - stored procedure and trigger changes
 - historical data fixes, backfills, and migrations
 - menu, permission, and role-permission changes backed by the database
+
+### SQL 脚本必须可校验（强制规则） / SQL scripts must be verifiable (Mandatory Rule)
+
+每个 SQL 脚本必须同时具备可验证执行结果的能力：
+
+- **脚本头部固定说明区**：必须包含【脚本用途】【执行前置条件】【预期结果】【执行后快速核对】四个固定字段
+- **脚本尾部独立校验区**：必须追加 `-- 【执行后校验SQL】` 区域，提供可直接执行的校验 SQL，使用 PASS/FAIL、COUNT、SUM 等可判定写法
+- **多片段脚本强制采用分片段校验模式**：每个执行片段完成后立即写入临时结果表，最终输出明细 + success_count + fail_count + 失败片段清单，严禁只放一个笼统总查询
+
+Every SQL script must also be verifiable:
+
+- **Fixed header area**: must include 【Script Purpose】【Execution Preconditions】【Expected Results】【Quick Post-Execution Check】
+- **Tail validation area**: must append `-- 【Post-Execution Validation SQL】` with runnable validation SQL using PASS/FAIL, COUNT, SUM, and other deterministic patterns
+- **Multi-segment scripts must use per-segment validation**: each segment writes to a temp result table immediately after execution; the final output must include details + success_count + fail_count + failed-segment list. A single vague aggregate query at the end is strictly prohibited.
 
 ### 人工操作也必须明确 / Manual operations must still be explicit
 
@@ -468,6 +498,8 @@ release-handbook-manager/
   skills/
     release-handbook-manager/
       SKILL.md
+    release-test-auto/
+      SKILL.md        # 配套自动化测试执行 Skill：别名 rta，负责基于 05-1 真源执行 IDE 终端可恢复自动化测试
   examples/
     basic-release/
       release/
@@ -537,6 +569,10 @@ This repository is a good fit if you:
 - 已支持初始化、维护、巡检三段式工作流 / Initialization, maintenance, and inspection modes are supported
 - 已支持 `rhm` 聊天别名 / The `rhm` chat alias is supported
 - 已沉淀单层平铺的发布材料结构 / The flat release-material structure is documented
+- **[新增] 版本号强制人工维护（一票否决红线）——禁止 AI 在任何场景下自动生成 / bump / 升级版本号**
+- **[新增] SQL 脚本强制可校验机制——头部四字段说明 + 尾部校验 SQL + 多片段分片段校验（明细+汇总+失败项）**
+- **[新增] 05-1 角色账号迁移规则——角色准备测试账号/测试密码从上一版本同名文件按角色列匹配迁移，仅允许追溯上一个版本**
+- **[新增] 配套 Skill `release-test-auto`（简称 `rta`）——基于 05-1 真源 + IDE 终端可独立运行 + 数据库基线可恢复 + 断点续跑 + 正向逆向双覆盖的自动化测试执行**
 
 ## 作者与维护信息 / Author and Maintainer
 

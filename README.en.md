@@ -31,8 +31,11 @@ Its chat alias is `rhm`.
 - **Purpose**: standardize release preparation and release execution
 - **Primary use**: initialize, maintain, and inspect release materials for a project
 - **Version source**: `release/version.json`
+- **Version maintenance**: **Veto Redline — version number MUST be maintained by explicit human instruction; AI auto-generation / auto-bump / auto-upgrade is strictly prohibited**
 - **Version format**: `vMajor.Minor.Patch`
 - **Default model**: one top-level version per project, even in multi-module repositories
+- **SQL validation**: mandatory SQL header (4 fields) + tail validation SQL + multi-segment per-segment validation (details + summary + failures)
+- **Companion Skill**: `release-test-auto` (alias `rta`) — companion automation test skill for IDE-terminal resumable UAT/regression execution based on the 05-1 truth source
 - **Documentation language**: the most complete docs are currently in Simplified Chinese, with this English README provided as the public entry page
 
 ## Why this exists
@@ -146,6 +149,12 @@ It checks whether:
 - `release/version.json` is the only source of truth for the current version
 - the version format is fixed to `vMajor.Minor.Patch`
 
+### Version numbers must be maintained manually (Veto Redline)
+
+- The `version` field **must** be written only by an explicit human instruction; AI must **never** auto-generate, auto-bump, or auto-upgrade the version number under any scenario
+- AI is only allowed to write the `version` field in exactly two cases: (1) human explicitly provides the exact target version and asks to write it; (2) human explicitly instructs a version-change intent
+- During initialization, if no human-provided version is available, a placeholder (e.g. `vX.Y.Z`) must be used with a clear prompt for manual completion
+
 ### Everything scriptable must be scripted
 
 The following items must be delivered as SQL, not vague notes:
@@ -155,6 +164,14 @@ The following items must be delivered as SQL, not vague notes:
 - stored procedure and trigger changes
 - historical data fixes, backfills, and migrations
 - menu, permission, and role-permission changes backed by the database
+
+### SQL scripts must be verifiable (Mandatory Rule)
+
+Every SQL script must also be verifiable:
+
+- **Fixed header area with 4 fields**: Script Purpose / Execution Preconditions / Expected Results / Quick Post-Execution Check
+- **Tail validation area**: must append `-- 【Post-Execution Validation SQL】` with runnable validation SQL using PASS/FAIL, COUNT, SUM, and other deterministic patterns
+- **Multi-segment scripts require per-segment validation**: each segment writes result to temp table immediately after execution; final output must include details + success_count + fail_count + failed-segment list. A single vague aggregate query at the end is strictly prohibited.
 
 ### Manual operations must still be explicit
 
@@ -315,6 +332,8 @@ release-handbook-manager/
   skills/
     release-handbook-manager/
       SKILL.md
+    release-test-auto/
+      SKILL.md        # Companion automation test skill: alias rta, runs resumable IDE-terminal tests from the 05-1 truth source
   examples/
     basic-release/
       release/
@@ -371,6 +390,10 @@ This repository is a good fit if you:
 - initialization, maintenance, and inspection modes are supported
 - the `rhm` chat alias is supported
 - the flat release-material structure is documented
+- **[NEW] Veto Redline: version number must be maintained manually — AI auto-generation / auto-bump / auto-upgrade is strictly prohibited**
+- **[NEW] Mandatory verifiable SQL scripts — 4-field header + tail validation SQL + multi-segment per-segment validation (details + summary + failures)**
+- **[NEW] 05-1 role-account migration rule — test account/password are migrated from the previous version's 05-1 file, matching by role column; only the immediate previous version is allowed for fallback**
+- **[NEW] Companion Skill `release-test-auto` (alias `rta`) — resumable IDE-terminal automation test execution based on the 05-1 truth source, with test-data restore, breakpoint resume, and both positive + negative test coverage**
 
 ## Author and Maintainer
 
