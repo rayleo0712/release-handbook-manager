@@ -31,8 +31,11 @@ Its chat alias is `rhm`.
 - **Purpose**: standardize release preparation and release execution
 - **Primary use**: initialize, maintain, and inspect release materials for a project
 - **Version source**: `release/version.json`
+- **Version maintenance**: **Veto Redline — version number MUST be maintained by explicit human instruction; AI auto-generation / auto-bump / auto-upgrade is strictly prohibited**
 - **Version format**: `vMajor.Minor.Patch`
 - **Default model**: one top-level version per project, even in multi-module repositories
+- **SQL validation**: mandatory SQL header (4 fields) + tail validation SQL + multi-segment per-segment validation (details + summary + failures)
+- **Companion Skill**: `release-test-auto` (alias `rta`) — companion automation test skill for IDE-terminal resumable UAT/regression execution based on the 05-1 truth source
 - **Documentation language**: the most complete docs are currently in Simplified Chinese, with this English README provided as the public entry page
 
 ## Why this exists
@@ -146,6 +149,12 @@ It checks whether:
 - `release/version.json` is the only source of truth for the current version
 - the version format is fixed to `vMajor.Minor.Patch`
 
+### Version numbers must be maintained manually (Veto Redline)
+
+- The `version` field **must** be written only by an explicit human instruction; AI must **never** auto-generate, auto-bump, or auto-upgrade the version number under any scenario
+- AI is only allowed to write the `version` field in exactly two cases: (1) human explicitly provides the exact target version and asks to write it; (2) human explicitly instructs a version-change intent
+- During initialization, if no human-provided version is available, a placeholder (e.g. `vX.Y.Z`) must be used with a clear prompt for manual completion
+
 ### Everything scriptable must be scripted
 
 The following items must be delivered as SQL, not vague notes:
@@ -155,6 +164,14 @@ The following items must be delivered as SQL, not vague notes:
 - stored procedure and trigger changes
 - historical data fixes, backfills, and migrations
 - menu, permission, and role-permission changes backed by the database
+
+### SQL scripts must be verifiable (Mandatory Rule)
+
+Every SQL script must also be verifiable:
+
+- **Fixed header area with 4 fields**: Script Purpose / Execution Preconditions / Expected Results / Quick Post-Execution Check
+- **Tail validation area**: must append `-- 【Post-Execution Validation SQL】` with runnable validation SQL using PASS/FAIL, COUNT, SUM, and other deterministic patterns
+- **Multi-segment scripts require per-segment validation**: each segment writes result to temp table immediately after execution; final output must include details + success_count + fail_count + failed-segment list. A single vague aggregate query at the end is strictly prohibited.
 
 ### Manual operations must still be explicit
 
@@ -186,6 +203,7 @@ release/
       03-config-002-角色权限配置.sql
       04-发布检查清单.md
       05-发布后验证记录.md
+      05-1-功能验收用例(非技术版).md
       06-版本更新日志.md
 ```
 
@@ -194,6 +212,11 @@ Notes:
 - `02` and `03` are not nested into extra folders
 - all files stay in one flat level
 - file prefixes directly encode category and execution order
+- `05` (tech-facing verification, for QA/developers) and `05-1` (non-tech UAT acceptance, for PM/business users) go hand in hand as a dual-track pair; 05-1 uses an 8-column structure · full-level output, with **Output Mode Switch (A Internal / B External Delivery)**
+
+### §3.2 Directory Conventions
+
+- It is **strictly prohibited** to store temporary command markdown files such as `YYYYMMDD-Windows-Terminal` under the `versions/` directory. Such temporary command records must be consolidated into §4.1.3 of `01-更新手册.md`.
 
 ## Default release model
 
@@ -266,6 +289,20 @@ Use rhm to maintain the current version changes. This task includes one schema c
 Use rhm to check whether v1.1.0 is ready for release
 ```
 
+## §4 File Descriptions
+
+### §4.2 Files Inside Version Directory
+
+| File No. | File Name Template | Description |
+|---------|-------------------|-------------|
+| 01 | `01-更新手册.md` | Source-of-truth release handbook: change summary, SQL/manual step references, release order, rollback notes, §4.1.3 temp-command consolidation area |
+| 02 | `02-db-*.sql` | Scriptable database operations: schema changes, historical data repair, backfill, migration |
+| 03 | `03-config-*.sql` | Database-driven configuration scripts: menu setup, permission grants, role grants, dictionaries, params |
+| 04 | `04-发布检查清单.md` | Pre-release checklist: environment consistency, script completeness, permission verification |
+| 05 | `05-发布后验证记录.md` | Tech-facing post-release verification (for QA/dev): APIs, database, logs, performance |
+| **05-1** | **`05-1-功能验收用例(非技术版).md`** | **Non-tech version · for Product Manager / UAT / Business-user acceptance checklist: 8-column structure · full-level output · with Output Mode Switch (A Internal Review / B External Delivery); 8 columns: Module, Scenario, Precondition, Steps, Expected, Priority P0/P1/P2, Actual, Approver** |
+| 06 | `06-版本更新日志.md` | External release notes, grouped by Features / Fixes / Improvements |
+
 ## Repository layout
 
 ```text
@@ -290,10 +327,13 @@ release-handbook-manager/
             01-更新手册.md
             04-发布检查清单.md
             05-发布后验证记录.md
+            05-1-功能验收用例(非技术版).md
             06-版本更新日志.md
   skills/
     release-handbook-manager/
       SKILL.md
+    release-test-auto/
+      SKILL.md        # Companion automation test skill: alias rta, runs resumable IDE-terminal tests from the 05-1 truth source
   examples/
     basic-release/
       release/
@@ -303,6 +343,7 @@ release-handbook-manager/
             01-更新手册.md
             04-发布检查清单.md
             05-发布后验证记录.md
+            05-1-功能验收用例(非技术版).md
             06-版本更新日志.md
 ```
 
@@ -349,6 +390,10 @@ This repository is a good fit if you:
 - initialization, maintenance, and inspection modes are supported
 - the `rhm` chat alias is supported
 - the flat release-material structure is documented
+- **[NEW] Veto Redline: version number must be maintained manually — AI auto-generation / auto-bump / auto-upgrade is strictly prohibited**
+- **[NEW] Mandatory verifiable SQL scripts — 4-field header + tail validation SQL + multi-segment per-segment validation (details + summary + failures)**
+- **[NEW] 05-1 role-account migration rule — test account/password are migrated from the previous version's 05-1 file, matching by role column; only the immediate previous version is allowed for fallback**
+- **[NEW] Companion Skill `release-test-auto` (alias `rta`) — resumable IDE-terminal automation test execution based on the 05-1 truth source, with test-data restore, breakpoint resume, and both positive + negative test coverage**
 
 ## Author and Maintainer
 
