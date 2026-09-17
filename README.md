@@ -79,11 +79,24 @@
 
 ### 第一步：把它放进你的项目
 
-把 `skills/release-handbook-manager/SKILL.md` 放到你自己项目的 Skill 目录里，例如：
+把 `skills/release-handbook-manager/` **整个目录**放到你自己项目的 Skill 目录里，例如：
 
 ```text
 .trae/skills/release-handbook-manager/SKILL.md
+.trae/skills/release-handbook-manager/references/
 ```
+
+> ⚠️ **必须连同 `references/` 整个目录一起复制。**
+> `SKILL.md` 里只有「什么时候用 + 核心口径 + 索引表」，7 份发布材料的完整模板、SQL 规范、红线全文都放在 `references/` 里按需读取。只复制 `SKILL.md` 会导致模板与红线丢失。
+
+需要配套自动化测试时，同样整目录复制：
+
+```text
+.trae/skills/release-test-auto/SKILL.md
+.trae/skills/release-test-auto/references/
+```
+
+关于按需加载与体积约束：`references/` 分片只在 `SKILL.md` 索引表命中当前场景时读取，不要一次性全读；`rhm/SKILL.md` 保持 ≤8 KB、`rta/SKILL.md` ≤7 KB、单个分片 ≤15 KB、单个项目规则模板 ≤1.5 KB，超出门禁说明细则应该继续下沉到 `references/`。此处 KB 一律按 1 KB = 1024 字节、以 UTF-8 实际字节数计算，精确字节值与测量命令见 `AGENTS.md`「发布前自检建议」第 6~9 项。
 
 ### 第二步：让 AI 帮你初始化
 
@@ -153,14 +166,20 @@ AI 会帮你核对所有脚本、步骤、清单是否齐全，没问题再发�
 release-handbook-manager/
   README.md                              ← 你正在看的这份说明
   skills/
-    release-handbook-manager/SKILL.md   ← 主工具 AI 指令文件（放到项目里让 AI 读）
-    release-test-auto/SKILL.md          ← 配套自动化测试工具 AI 指令文件
+    release-handbook-manager/
+      SKILL.md                           ← 主工具索引层（何时用 + 核心口径 + 索引表）
+      references/                        ← 主工具细则层（12 个分片，按需加载）
+    release-test-auto/
+      SKILL.md                           ← 配套自动化测试工具索引层
+      references/                        ← 自动化测试细则层（6 个分片，按需加载）
   templates/                            ← 模板文件，初始化时会用
-    project-rules/                      ← 项目协作规则模板
+    project-rules/                      ← 项目协作规则模板（发布治理口径 + 会话批量与上下文约束）
     basic-release/                      ← 发布材料模板（版本号、7份文档等）
-  examples/                             ← 最小示例，看一眼就知道长什么样
+  examples/                             ← 最小示例，看一眼就知道长什么样（含 archive/ 归档示例）
   docs/                                 ← 更详细的设计说明、快速开始、使用示例
 ```
+
+`SKILL.md` 是常驻索引层，`references/` 是按需加载的细则层，复制安装时两者必须成套。
 
 ---
 
@@ -172,6 +191,8 @@ release-handbook-manager/
 - [设计说明（为什么这么设计）](./docs/20260715-%E8%AE%BE%E8%AE%A1%E8%AF%B4%E6%98%8E.md)
 - [使用示例](./docs/20260715-%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B.md)
 - [2026-09-05 版本发布治理能力增强-变更记录](./docs/20260905-%E7%89%88%E6%9C%AC%E5%8F%91%E5%B8%83%E6%B2%BB%E7%90%86%E8%83%BD%E5%8A%9B%E5%A2%9E%E5%BC%BA-%E5%8F%98%E6%9B%B4%E8%AE%B0%E5%BD%95.md)
+- [2026-09-16 对话耗时与 Token 消耗诊断优化方案（含本仓库整改落地记录）](./docs/20260916-%E5%AF%B9%E8%AF%9D%E8%80%97%E6%97%B6%E4%B8%8EToken%E6%B6%88%E8%80%97%E8%AF%8A%E6%96%AD%E4%BC%98%E5%8C%96%E6%96%B9%E6%A1%88.md)
+- [文档导航（双语入口）](./docs/20260715-%E6%96%87%E6%A1%A3%E5%AF%BC%E8%88%AA.md)
 
 ---
 

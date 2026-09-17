@@ -205,18 +205,23 @@ release/
       05-发布后验证记录.md
       05-1-功能验收用例(非技术版).md
       06-版本更新日志.md
+      archive/
+        05-验证记录-第1轮.md
 ```
 
 Notes:
 
 - `02` and `03` are not nested into extra folders
-- all files stay in one flat level
+- all execution files (01–06) stay in one flat level
 - file prefixes directly encode category and execution order
-- `05` (tech-facing verification, for QA/developers) and `05-1` (non-tech UAT acceptance, for PM/business users) go hand in hand as a dual-track pair; 05-1 uses an 8-column structure · full-level output, with **Output Mode Switch (A Internal / B External Delivery)**
+- `archive/` is the **only** allowed sub-directory: previous verification rounds move to `archive/05-验证记录-第N轮.md`, and release execution **must not** read `archive/`
+- every file under `release/versions/**` must keep each line ≤200 characters and expand tables row by row; over-long lines break targeted search and targeted edits
+- `05` (tech-facing verification, for QA/developers) and `05-1` (non-tech UAT acceptance, for PM/business users) go hand in hand as a dual-track pair; 05-1 uses a 10-column structure · full-level output, with **Output Mode Switch (A Internal / B External Delivery)**
 
 ### §3.2 Directory Conventions
 
-- It is **strictly prohibited** to store temporary command markdown files such as `YYYYMMDD-Windows-Terminal` under the `versions/` directory. Such temporary command records must be consolidated into §4.1.3 of `01-更新手册.md`.
+- It is **strictly prohibited** to store temporary command markdown files such as `YYYYMMDD-Windows-Terminal` under the `versions/` directory. Such temporary command records must be consolidated into `§8 命令区` of `04-发布检查清单.md`, which is the single source of truth for all startup / data-recovery / four-scenario commands; `01`/`05`/`05-1`/`06` may only point to it and must never inline the command bodies.
+- Apart from `archive/`, no further nested sub-directories may be created under a version directory.
 
 ## Default release model
 
@@ -247,11 +252,24 @@ the recommended approach is still:
 
 ### 1. Put the Skill into your project
 
-Copy the Skill file into your Skill directory, for example:
+Copy the **whole Skill directory** into your Skill directory, for example:
 
 ```text
 .trae/skills/release-handbook-manager/SKILL.md
+.trae/skills/release-handbook-manager/references/
 ```
+
+> ⚠️ **`references/` must be copied together with `SKILL.md`.**
+> `SKILL.md` only carries "when to use + core rules + the references index table". The full templates of the 7 release files, the SQL specification and the veto redlines live in `references/` and are loaded on demand. Copying `SKILL.md` alone loses the templates and the redlines.
+
+If you also use the companion automation test skill, copy it the same way:
+
+```text
+.trae/skills/release-test-auto/SKILL.md
+.trae/skills/release-test-auto/references/
+```
+
+On-demand loading and size budget: a `references/` shard is only read when the `SKILL.md` index table matches the current scenario, never "read everything just in case". Size gates are `rhm/SKILL.md` ≤8 KB, `rta/SKILL.md` ≤7 KB, one reference ≤15 KB, one project rule template ≤1.5 KB. Exceeding a gate means details should move further down into `references/`, not back into `SKILL.md`. KB always means 1024 bytes here, measured as the real UTF-8 byte count; exact byte values and the measurement commands are defined in `AGENTS.md`, "发布前自检建议" items 6-9.
 
 ### 2. Initialize release governance in chat
 
@@ -295,12 +313,12 @@ Use rhm to check whether v1.1.0 is ready for release
 
 | File No. | File Name Template | Description |
 |---------|-------------------|-------------|
-| 01 | `01-更新手册.md` | Source-of-truth release handbook: change summary, SQL/manual step references, release order, rollback notes, §4.1.3 temp-command consolidation area |
+| 01 | `01-更新手册.md` | Source-of-truth release handbook: change summary (§3.1–§3.6), change ledger (§3.7), SQL/manual step references, release order, rollback notes; command bodies are **not** stored here — see `04 §8` |
 | 02 | `02-db-*.sql` | Scriptable database operations: schema changes, historical data repair, backfill, migration |
 | 03 | `03-config-*.sql` | Database-driven configuration scripts: menu setup, permission grants, role grants, dictionaries, params |
 | 04 | `04-发布检查清单.md` | Pre-release checklist: environment consistency, script completeness, permission verification |
 | 05 | `05-发布后验证记录.md` | Tech-facing post-release verification (for QA/dev): APIs, database, logs, performance |
-| **05-1** | **`05-1-功能验收用例(非技术版).md`** | **Non-tech version · for Product Manager / UAT / Business-user acceptance checklist: 8-column structure · full-level output · with Output Mode Switch (A Internal Review / B External Delivery); 8 columns: Module, Scenario, Precondition, Steps, Expected, Priority P0/P1/P2, Actual, Approver** |
+| **05-1** | **`05-1-功能验收用例(非技术版).md`** | **Non-tech version · for Product Manager / UAT / Business-user acceptance checklist: 10-column structure · full-level output · with Output Mode Switch (A Internal Review / B External Delivery); 10 columns: Case ID, Source Change ID, Coverage Type, Priority(P0/P1/P2), Page(Chinese path + URL), Operation(numbered steps 1-2-3), Expected(verifiable result), Actual Result, Approver, Remarks; plus §八 acceptance summary table and §九 UAT signature area** |
 | 06 | `06-版本更新日志.md` | External release notes, grouped by Features / Fixes / Improvements |
 
 ## Repository layout
@@ -316,9 +334,12 @@ release-handbook-manager/
     20260715-快速开始.md
     20260715-使用示例.md
     20260715-设计说明.md
+    20260715-文档导航.md
+    20260916-对话耗时与Token消耗诊断优化方案.md
   templates/
     project-rules/
       20260715-08-协作-版本发布与更新手册规则.md
+      20260916-06-协作-会话批量与上下文约束规则.md
     basic-release/
       release/
         version.json
@@ -331,9 +352,11 @@ release-handbook-manager/
             06-版本更新日志.md
   skills/
     release-handbook-manager/
-      SKILL.md
+      SKILL.md        # Always-loaded index layer (≤8 KB): when to use + core rules + references index table
+      references/     # On-demand detail layer: 12 shards (templates, SQL spec, redlines, sub-flows)
     release-test-auto/
-      SKILL.md        # Companion automation test skill: alias rta, runs resumable IDE-terminal tests from the 05-1 truth source
+      SKILL.md        # Companion automation test skill: alias rta, runs resumable IDE-terminal tests from the 05-1 truth source (≤7 KB)
+      references/     # On-demand detail layer: 6 shards (env, gen, shell, coverage, resume, order)
   examples/
     basic-release/
       release/
@@ -345,6 +368,8 @@ release-handbook-manager/
             05-发布后验证记录.md
             05-1-功能验收用例(非技术版).md
             06-版本更新日志.md
+            archive/
+              05-验证记录-第1轮.md
 ```
 
 ## Docs
@@ -354,12 +379,16 @@ release-handbook-manager/
 - [GitHub Release Preparation](./docs/20260715-GitHub%E5%8F%91%E5%B8%83%E5%87%86%E5%A4%87.md)
 - [Usage Examples](./docs/20260715-%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B.md)
 - [Design Notes](./docs/20260715-%E8%AE%BE%E8%AE%A1%E8%AF%B4%E6%98%8E.md)
+- [Conversation Latency & Token Consumption Diagnosis (with the remediation record of this repo)](./docs/20260916-%E5%AF%B9%E8%AF%9D%E8%80%97%E6%97%B6%E4%B8%8EToken%E6%B6%88%E8%80%97%E8%AF%8A%E6%96%AD%E4%BC%98%E5%8C%96%E6%96%B9%E6%A1%88.md)
 
 ## Template links
 
-- [Rule template](./templates/project-rules/20260715-08-%E5%8D%8F%E4%BD%9C-%E7%89%88%E6%9C%AC%E5%8F%91%E5%B8%83%E4%B8%8E%E6%9B%B4%E6%96%B0%E6%89%8B%E5%86%8C%E8%A7%84%E5%88%99.md)
+- [Release governance rule template](./templates/project-rules/20260715-08-%E5%8D%8F%E4%BD%9C-%E7%89%88%E6%9C%AC%E5%8F%91%E5%B8%83%E4%B8%8E%E6%9B%B4%E6%96%B0%E6%89%8B%E5%86%8C%E8%A7%84%E5%88%99.md)
+- [Session batching & context budget rule template](./templates/project-rules/20260916-06-%E5%8D%8F%E4%BD%9C-%E4%BC%9A%E8%AF%9D%E6%89%B9%E9%87%8F%E4%B8%8E%E4%B8%8A%E4%B8%8B%E6%96%87%E7%BA%A6%E6%9D%9F%E8%A7%84%E5%88%99.md)
 - [Base release template directory](./templates/basic-release/release/)
 - [Distributable Skill](./skills/release-handbook-manager/SKILL.md)
+- [rhm references (on-demand details)](./skills/release-handbook-manager/references/)
+- [rta references (on-demand details)](./skills/release-test-auto/references/)
 
 ## Community
 
