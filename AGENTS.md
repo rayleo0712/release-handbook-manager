@@ -39,6 +39,7 @@
 - `skills/release-test-auto/SKILL.md`
 - `skills/release-handbook-manager/references/`
 - `skills/release-test-auto/references/`
+- `skills/release-handbook-manager/assets/`（只复制不读取的大文件模板资产，如 `run-release.ps1`）
 - `README.md`
 - `README.en.md`
 - `templates/`
@@ -51,6 +52,7 @@
 - `README.md` 是默认对外展示首页真源。
 - `README.en.md` 是英文入口页真源。
 - `templates/` 是可复用模板真源。
+- `skills/release-handbook-manager/assets/` 是大文件模板资产真源（如 `run-release.ps1`）；资产文件只允许被复制/下载到项目版本目录，禁止 Read 进对话上下文或逐行重写，体积不受 references 分片 15 KB 门禁限制。
 - `docs/` 是设计说明、快速开始、使用示例等文档真源。
 
 ## 核心边界
@@ -67,7 +69,7 @@
 - `docs/`：设计说明、快速开始、使用示例、导航文档
 - `templates/`：规则模板与发布模板
 - `examples/`：最小示例目录
-- `skills/`：可分发的 Skill 文件（`SKILL.md` 为常驻索引层，`references/` 为按需加载细则层）
+- `skills/`：可分发的 Skill 文件（`SKILL.md` 为常驻索引层，`references/` 为按需加载细则层，`assets/` 为只复制不读取的大文件模板资产层）
 
 ## 维护约定
 
@@ -76,6 +78,7 @@
 - 修改中文首页的重要定位表述时，应同步检查 `README.en.md` 中的英文口径是否一致。
 - 修改 `SKILL.md` 的 references 索引表时，必须同步核对索引表中登记的 `references/` 文件名与实际文件一一对应，禁止出现死链。
 - 新增 `references/` 分片时，必须同时在对应 `SKILL.md` 索引表登记其触发条件；未登记的分片视为漏加载缺陷。
+- 新增/修改 `skills/release-handbook-manager/assets/` 下资产时，必须同步更新引用它的分片（如 `runner-批量执行器.md`）与 `examples/` 内副本；资产保持版本无关，禁止把具体版本号写死进资产。
 - 从 `SKILL.md` 或 `templates/project-rules/` 移出细则时，必须先确认该内容在 `references/` 中已有全文，再删除原处，避免口径丢失。
 - 对外文案优先准确，不得夸大自动化能力。
 
@@ -85,7 +88,7 @@
 
 1. `README.md` 与 `README.en.md` 是否一致反映当前定位
 2. `SKILL.md` 是否仍是最终真源版本
-3. `templates/` 与 `examples/` 是否完整
+3. `templates/` 与 `examples/` 是否完整；`examples/` 内资产副本是否与 `skills/release-handbook-manager/assets/` 同名文件 SHA256 一致
 4. `rhm` 别名说明是否仍保留
 5. “仅适合 AI 深度参与开发”这一前提是否仍在显著位置保留
 6. `skills/release-handbook-manager/SKILL.md` 体积是否仍 ≤8 KB（= 8192 字节）、`skills/release-test-auto/SKILL.md` 是否仍 ≤7 KB（= 7168 字节）

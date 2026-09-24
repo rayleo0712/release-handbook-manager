@@ -56,8 +56,9 @@
 |---|---|
 | `release/version.json` | 记录当前系统版本号的「唯一正确答案」，别的地方都不算数 |
 | `release/versions/当前版本号/01-更新手册.md` | 本次升级的总说明书：改了什么、有哪些脚本、按什么顺序做、出问题怎么回退 |
-| `02-db-xxx.sql` | 改数据库的脚本，直接执行就行 |
-| `03-config-xxx.sql` | 改菜单、权限、角色等配置的脚本，直接执行就行 |
+| `02-db-xxx.sql` | 改数据库的脚本，直接执行就行；同类改动归并进同一脚本的不同片段，**文件名三位编号本身就是执行先后顺序** |
+| `03-config-xxx.sql` | 改菜单、权限、角色等配置的脚本，直接执行就行；同样优先归并、编号定序 |
+| `run-release.ps1` | 每个版本自带的批量执行器：版本目录只放生产要执行的脚本，**没有「跳过」机制**；执行前先校验编号、依赖顺序、以及「每个脚本是否都带结果校验」，有问题一条都不执行；跑完每个脚本都有明确 PASS/FAIL 反馈并生成报告（初始化时自动复制，不用自己写） |
 | `04-发布检查清单.md` | 升级前要核对的清单，防止漏东西 |
 | `05-发布后验证记录.md` | 升级后，技术人员要做的验证项和结果记录 |
 | `05-1-功能验收用例(非技术版).md` | 升级后，产品经理/业务人员/客户可以照着检查的验收清单（页面操作、能看懂） |
@@ -84,10 +85,12 @@
 ```text
 .trae/skills/release-handbook-manager/SKILL.md
 .trae/skills/release-handbook-manager/references/
+.trae/skills/release-handbook-manager/assets/        ← run-release.ps1 等可复制资产
 ```
 
-> ⚠️ **必须连同 `references/` 整个目录一起复制。**
+> ⚠️ **必须连同 `references/`、`assets/` 整个目录一起复制。**
 > `SKILL.md` 里只有「什么时候用 + 核心口径 + 索引表」，7 份发布材料的完整模板、SQL 规范、红线全文都放在 `references/` 里按需读取。只复制 `SKILL.md` 会导致模板与红线丢失。
+> `assets/` 里是批量执行器等大文件模板，AI 只做**文件复制/下载**、不读进对话上下文，初始化或切版本时自动把 `run-release.ps1` 放进版本目录，不占 token；资产缺失时也可以从 GitHub 单独下载最新版。
 
 需要配套自动化测试时，同样整目录复制：
 
@@ -168,7 +171,8 @@ release-handbook-manager/
   skills/
     release-handbook-manager/
       SKILL.md                           ← 主工具索引层（何时用 + 核心口径 + 索引表）
-      references/                        ← 主工具细则层（12 个分片，按需加载）
+      references/                        ← 主工具细则层（13 个分片，按需加载）
+      assets/                            ← 大文件模板资产（run-release.ps1，只复制不读取）
     release-test-auto/
       SKILL.md                           ← 配套自动化测试工具索引层
       references/                        ← 自动化测试细则层（6 个分片，按需加载）
@@ -179,7 +183,7 @@ release-handbook-manager/
   docs/                                 ← 更详细的设计说明、快速开始、使用示例
 ```
 
-`SKILL.md` 是常驻索引层，`references/` 是按需加载的细则层，复制安装时两者必须成套。
+`SKILL.md` 是常驻索引层，`references/` 是按需加载的细则层，`assets/` 是只复制不读取的资产层，复制安装时三者必须成套。
 
 ---
 
