@@ -1,4 +1,4 @@
-﻿﻿<#
+﻿<#
 .SYNOPSIS  Release SQL runner + verifier + report generator (version-agnostic)
 
 .DESCRIPTION
