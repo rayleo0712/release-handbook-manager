@@ -19,6 +19,7 @@
 ```json
 {
   "version": "v1.2.3",
+  "stage": "quick",
   "status": "running",
   "total_count": 0,
   "completed_count": 0,
@@ -31,6 +32,8 @@
   "completed_at": ""
 }
 ```
+
+`stage` 标注当前执行阶段（两类型门控，见 `coverage-测试覆盖规则.md` §5）：`"quick"` = 类型一快速测试（curl/API 层），`"render"` = 类型二渲染测试（Playwright）。
 
 **`checkpoints.json`**
 
@@ -81,9 +84,13 @@
 
 1. 检查 `run-status.json` 是否仍为 `running`
 2. 读取 `checkpoints.json`
-3. 重新启动环境
-4. 跳过已完成用例
-5. 从 `resume_from_case_id` 或下一个未完成用例继续
+3. 读取 `stage` 判定恢复阶段：
+   - `stage == "quick"`：从 quick 断点继续；若 quick 已全过且门控满足（全过或用户明确指令），置 `stage = "render"` 后从头执行渲染测试
+   - `stage == "render"`：从 render 断点继续
+   - quick 阶段仍存在失败时，恢复后必须停留在 quick 修复重跑，**不得切换到 render**
+4. 重新启动环境
+5. 跳过已完成用例
+6. 从 `resume_from_case_id` 或下一个未完成用例继续
 
 ### 5.4 完成判定
 
@@ -96,6 +103,11 @@
 5. `final-report.md` 已生成
 
 若缺任一项，均视为“测试未完成”，不得误报完成。
+
+阶段口径（两类型门控）：
+
+- `stage == "quick"` 完成即本阶段完成；此时若门控满足（全过或明确指令）应进入 render，否则最终报告必须注明「渲染测试未执行：快速测试未全过 / 无明确指令」
+- 整体完成 = render 阶段完成（若已触发）；只有 quick 无失败才允许宣称整体通过
 
 ### 5.5 防卡死规则
 

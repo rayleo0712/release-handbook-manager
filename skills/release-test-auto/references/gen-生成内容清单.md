@@ -54,21 +54,27 @@
 - 校验关键业务基线数据是否存在
 - 输出 PASS / FAIL、成功数 / 失败数
 
-### 3.4 自动化测试执行脚本
+### 3.4 自动化测试执行脚本（两阶段形态）
 
 例如：
 
-- `scripts/test-auto/run-uat-auto.ps1`
-- `scripts/test-auto/run-uat-auto.sh`
+- `scripts/test-auto/run-uat-quick.ps1` —— 类型一·快速测试（curl / API 层）
+- `scripts/test-auto/run-uat-render.ps1` —— 类型二·渲染测试（Playwright）
+- 也可合并为 `run-uat-auto.ps1 -Stage quick|render` 单脚本双阶段
 
-职责：
+两阶段职责与门控规则全文见 `coverage-测试覆盖规则.md` §5（默认只跑 quick；quick 全过或明确指令才跑 render；`run-status.json` 标注 `stage`）。
 
-- 读取 `05-1`
-- 读取账号
-- 登录系统
-- 按用例顺序执行页面自动化 / 接口自动化
+职责（两形态共通）：
+
+- 读取 `05-1` 与账号（含「节点/角色 → 测试账号」映射）
+- 按用例顺序执行
 - 为 AI 自动补充的逆向场景生成稳定 `case_id`
-- 每条结果立即落盘
+- 每条结果立即落盘并标注所属阶段
+
+形态差异：
+
+- **quick**：按操作角色用对应账号 token 发 curl/API 请求；断言接口结果 + 后端真实状态（不得只看 HTTP 200）；涉及流程引擎时按 `coverage` §6 断言引擎状态
+- **render**：Playwright 打开页面、对应账号登录，1:1 真实操作；断言前端权限显隐、渲染正确性、交互请求成功；截图按用例编号+时间戳落盘
 
 ### 3.5 测试结果文件
 
@@ -86,3 +92,8 @@
 - AI 自动补充的逆向场景也必须按普通用例生成结构化结果，并进入统一计数
 - 每次截图文件名应包含用例编号与时间戳
 - `final-report.md` 必须引用 `run-status.json` 的最终统计值，不得人工目测拼写
+
+### 3.6 测试夹具脚本（涉及流程引擎时）
+
+- 需要「在途流程到第 N 节点」等前置状态时，生成 **API 逐节点推进**的夹具脚本（按节点账号调用真实接口推进），禁止 SQL 改状态字段快进（`coverage` §6）
+- 非流程基础数据造数仍走 SQL，归 `scripts/test-auto/`（§3.2 边界）
