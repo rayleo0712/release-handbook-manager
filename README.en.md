@@ -362,26 +362,14 @@ release-handbook-manager/
     release-test-auto/
       SKILL.md        # Companion automation test skill: alias rta, runs resumable IDE-terminal tests from the 05-1 truth source (≤7 KB)
       references/     # On-demand detail layer: 6 shards (env, gen, shell, coverage, resume, order)
-  examples/
-    basic-release/
-      release/
-        version.json
-        versions/
-          v1.0.0/
-            01-更新手册.md
-            04-发布检查清单.md
-            05-发布后验证记录.md
-            05-1-功能验收用例(非技术版).md
-            06-版本更新日志.md
-            run-release.ps1
-            archive/
-              05-验证记录-第1轮.md
+  examples/                           # Reserved for minimal examples (currently empty)
 ```
 
 ## Docs
 
 - [Documentation Index](./docs/20260715-%E6%96%87%E6%A1%A3%E5%AF%BC%E8%88%AA.md)
 - [Quick Start](./docs/20260715-%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B.md)
+- [2026-10-02 Changelog: release-script governance & two-stage test gating (Chinese)](./docs/20261002-%E5%8F%91%E5%B8%83%E8%84%9A%E6%9C%AC%E6%B2%BB%E7%90%86%E4%B8%8E%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%8B%E8%AF%95%E4%B8%A4%E7%B1%BB%E5%9E%8B%E9%97%A8%E6%8E%A7-%E5%8F%98%E6%9B%B4%E8%AE%B0%E5%BD%95.md)
 - [GitHub Release Preparation](./docs/20260715-GitHub%E5%8F%91%E5%B8%83%E5%87%86%E5%A4%87.md)
 - [Usage Examples](./docs/20260715-%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B.md)
 - [Design Notes](./docs/20260715-%E8%AE%BE%E8%AE%A1%E8%AF%B4%E6%98%8E.md)
