@@ -235,7 +235,7 @@ NNN = 三位定宽数字，取值 001~999；000 保留为「本版暂无脚本�
 
 ```sql
 -- @depends 02-db-001            -- 简写（前缀-NNN）；也可写完整文件名（.sql 可省略）
-CREATE INDEX idx_demo ON t_user(handler_id);
+CREATE INDEX idx_user_email ON t_user(email);
 -- @depends 02-db-001, 02-db-003 -- 多依赖用空格/逗号分隔，或写多行
 ```
 

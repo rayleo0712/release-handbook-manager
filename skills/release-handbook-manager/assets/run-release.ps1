@@ -36,7 +36,7 @@ param(
   [int]   $Port         = 3306,              # 数据库端口
   [string]$User         = "root",            # 数据库用户
   [string]$Password     = "",                # 数据库密码，建议执行时通过参数传入而非固化在文件里
-  [string]$Database     = "mydb",             # 目标数据库名
+  [string]$Database     = "mydb",             # 目标数据库名（示例值，使用时按项目替换）
   [int]   $IntervalSec  = 5,                 # 每个脚本执行后的间隔秒数
   [switch]$ResetFirst,                       # 是否先 DROP+CREATE 库（需二次确认）
   [int]   $StartIndex   = -1,                # 区间执行起始下标（-1 = 从头）
