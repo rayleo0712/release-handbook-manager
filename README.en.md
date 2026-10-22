@@ -316,7 +316,7 @@ Use rhm to check whether v1.1.0 is ready for release
 
 | File No. | File Name Template | Description |
 |---------|-------------------|-------------|
-| 01 | `01-更新手册.md` | Source-of-truth release handbook: change summary (§3.1–§3.6), change ledger (§3.7), SQL/manual step references, release order, rollback notes; command bodies are **not** stored here — see `04 §8` |
+| 01 | `01-更新手册.md` | Source-of-truth release handbook: change ledger (§3, materialized from the 07 flow), SQL/manual step references, release order, rollback notes; command bodies are **not** stored here — see `04 §8` |
 | 02 | `02-db-NNN-*.sql` | Scriptable database operations: schema, repair, backfill, migration. Same-unit changes merge as fragments; the fixed-width 3-digit NNN **is** the execution order |
 | 03 | `03-config-NNN-*.sql` | DB-driven config: menus, permissions, roles, dictionaries, params; same merge rule, NNN defines order (all 02 run before all 03) |
 | — | `run-release.ps1` | Per-version batch runner (fixed name). The version directory is a single channel holding ONLY production-required scripts — **nothing is skipped**. Before executing, it validates names, NNN uniqueness, `-- @depends` order and that every script carries a verification block (test-only/no-check scripts abort the run). Every executed script reports explicit PASS/FAIL; copied from skill assets — never generated line by line |
@@ -324,6 +324,7 @@ Use rhm to check whether v1.1.0 is ready for release
 | 05 | `05-发布后验证记录.md` | Tech-facing post-release verification (for QA/dev): APIs, database, logs, performance |
 | **05-1** | **`05-1-功能验收用例(非技术版).md`** | **Non-tech version · for Product Manager / UAT / Business-user acceptance checklist: 10-column structure · full-level output · with Output Mode Switch (A Internal Review / B External Delivery); 10 columns: Case ID, Source Change ID, Coverage Type, Priority(P0/P1/P2), Page(Chinese path + URL), Operation(numbered steps 1-2-3), Expected(verifiable result), Actual Result, Approver, Remarks; plus §八 acceptance summary table and §九 UAT signature area** |
 | 06 | `06-版本更新日志.md` | External release notes, grouped by Features / Fixes / Improvements |
+| 07 | `07-变更流水.md` | Append-only change flow logged during development (one line per change); the ledger, 05-1 cases and 06 notes are materialized from it in one pass before release (saves tokens — no per-round re-editing) |
 
 ## Repository layout
 
